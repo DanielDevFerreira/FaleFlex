@@ -20,8 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy){
     }
 
         async validate(payload: JwtPayload): Promise<tb_usuario_login>{
-            const { login } = payload;
-            const auth: tb_usuario_login = await this.authRepository.findOne({ login })
+            const { email } = payload;
+            const auth: tb_usuario_login = await this.authRepository.findOne({ email })
 
             if(!auth){
                 throw new UnauthorizedException('Solicitação não autorizado!');

@@ -11,6 +11,12 @@ export class tb_usuario_login{
 
     @Column({type: 'int', default: 0})
     confirm_email: number;
+    
+    @Column({nullable: true})
+    tokenConfirm: string;
+
+    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    dt_token_validation: Date;
 
     @Column({ type: "tinyint"})
     id_tipo_login: number;

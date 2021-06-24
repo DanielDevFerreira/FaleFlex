@@ -6,11 +6,11 @@ import { Injectable } from '@nestjs/common';
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendUserConfirmation(name: string, email: string, token: string) {
+  async sendUserConfirmation(name: string, email: string, tokenConfirm: string) {
     
-    const url = `example.com/auth/confirm?token=${token}`;
-    const urlBase = "http://localhost/img/lock_email.jpg";
-
+    const url = `example.com/auth/confirm`;
+    const anoAtual = new Date().getFullYear();
+ 
     await this.mailerService.sendMail({
       to: email,
       from: '"Time Fale Flex" <daniel.ferreira@rastreei.com>', // override default from
@@ -18,8 +18,28 @@ export class MailService {
       template: './confirmation', // ✅ template found again in v1.6.0
       context: {
         name: name,
-        urlBase,
         url,
+        tokenConfirm,
+        anoAtual
+      },
+    });
+  }
+
+  async sendForgotPassword(name: string, email: string, tokenConfirm: string) {
+    
+    const url = `http://localhost:4200/auth/forgotPassword?token=${tokenConfirm}`;
+    const anoAtual = new Date().getFullYear();
+
+    await this.mailerService.sendMail({
+      to: email,
+      from: '"Time Fale Flex" <daniel.ferreira@rastreei.com>', // override default from
+      subject: 'Recuperação de senha Fale Flex',
+      template: './forgotPassword', // ✅ template found again in v1.6.0
+      context: {
+        name: name,
+        url,
+        tokenConfirm,
+        anoAtual
       },
     });
   }
