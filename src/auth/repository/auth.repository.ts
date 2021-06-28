@@ -14,7 +14,7 @@ export class AuthRepository extends Repository<tb_usuario_login>{
     
     async createUser(createUserDto: CreateUserDto): Promise<tb_usuario_login>{
 
-        const {login, email, password} = createUserDto;
+        const {username, email, password} = createUserDto;
         const userExist = await this.findOne({email});
 
         if(userExist){
@@ -23,7 +23,7 @@ export class AuthRepository extends Repository<tb_usuario_login>{
 
             const{
                 id_tipo_login,
-                login,
+                username,
                 password,
                 name,
                 email,
@@ -38,7 +38,7 @@ export class AuthRepository extends Repository<tb_usuario_login>{
 
             const user = this.create({
                 id_tipo_login,
-                login,
+                username,
                 password: hashedPassword,
                 name,
                 email,
@@ -57,8 +57,7 @@ export class AuthRepository extends Repository<tb_usuario_login>{
 
 //================================================================================
 
-    async emailActive(tokenConfirmDto: TokenConfirmDTO): Promise<{message: string}>{
-        const { token } = tokenConfirmDto;
+    async emailActive(token: string): Promise<{message: string}>{
         const sql = await this.createQueryBuilder('user')
         .where("user.tokenConfirm = :token", {token: token})
         .getOne();
@@ -74,7 +73,7 @@ export class AuthRepository extends Repository<tb_usuario_login>{
                 return { message: "Sua conta foi ativado com sucesso!"}
             }
         }else{
-            return {message: "Error ao ativa sua conta, tente novamente !"}
+            throw new InternalServerErrorException('Código invalido !'); 
         }
     }
 

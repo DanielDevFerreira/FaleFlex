@@ -22,7 +22,7 @@ export class tb_usuario_login{
     id_tipo_login: number;
 
     @Column({ length: 20 })
-    login: string;
+    username: string;
 
     @Column({ length: 100 })
     password: string;

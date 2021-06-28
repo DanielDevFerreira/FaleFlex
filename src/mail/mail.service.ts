@@ -8,7 +8,7 @@ export class MailService {
 
   async sendUserConfirmation(name: string, email: string, tokenConfirm: string) {
     
-    const url = `example.com/auth/confirm`;
+    const url = `http://localhost:4200/account/two-step-verification`;
     const anoAtual = new Date().getFullYear();
  
     await this.mailerService.sendMail({

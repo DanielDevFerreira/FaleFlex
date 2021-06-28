@@ -33,11 +33,11 @@ export class AuthService {
 //============================================================================
 
 // function para auto cadastramento do usuário
-async signUp(signUpDto: SignUpDto): Promise<tb_usuario_login>{
+async signUp(signUpDto: SignUpDto){
 
     const{
         id_tipo_login = 2,
-        login,
+        username,
         password,
         name,
         email,
@@ -56,14 +56,14 @@ async signUp(signUpDto: SignUpDto): Promise<tb_usuario_login>{
         const hashedPassword = await bcript.hash(password, salt);
 
         // gerar codigo de validação de email
-        const tokenConfirm = Math.floor(100000 + Math.random() * 900000).toString();
+        const tokenConfirm = Math.floor(1000 + Math.random() * 9000).toString();
 
         //email do email para o usuário recem cadastrado
         await this.mailService.sendUserConfirmation(name, email, tokenConfirm)
 
         const userSignUp = this.authRepository.create({
             id_tipo_login,
-            login,
+            username,
             password: hashedPassword,
             name,
             email,
@@ -75,7 +75,7 @@ async signUp(signUpDto: SignUpDto): Promise<tb_usuario_login>{
         try {
             await this.authRepository.save(userSignUp);
             //console.log(await userSignUp);
-            return userSignUp;
+            return "Usuário cadastrado com sucesso!";
 
         } catch (error) {
             throw new InternalServerErrorException('Error com a conexão com o Bando de Dados'); 
@@ -85,8 +85,8 @@ async signUp(signUpDto: SignUpDto): Promise<tb_usuario_login>{
 //============================================================================
 
     // function para mudar o valor da coluna emailconfirm no banco, para ativa a conta do usuário
-    async emailActive(tokenConfirmDto: TokenConfirmDTO): Promise<{message: string}>{
-       return this.authRepository.emailActive(tokenConfirmDto);      
+    async emailActive(token: string): Promise<{message: string}>{
+       return this.authRepository.emailActive(token);      
     }
 
 //============================================================================
@@ -137,9 +137,9 @@ async signUp(signUpDto: SignUpDto): Promise<tb_usuario_login>{
 
 //============================================================================
 
-    async signIn(signInDto: SignInDto): Promise<{ acessToken: string }>{
+    async signIn(signInDto: SignInDto){
         const { email, password } = signInDto;
-        console.log(email, password)
+        //console.log(email, password)
         //verificar se existe o login
         const userLogin = await this.authRepository.findOne({ email });
 
@@ -148,10 +148,10 @@ async signUp(signUpDto: SignUpDto): Promise<tb_usuario_login>{
             // geraldo o token para o login
             const payload: JwtPayload = { email };
             const acessToken = await this.jwtService.sign(payload);
-            return { acessToken };
+            return  acessToken;
         //conta ainda não ativada pelo email    
         }else if(userLogin && userLogin.confirm_email == 0 && (await bcript.compare(password, userLogin.password))){
-            throw new UnauthorizedException('Conta informada, não estar ativada !');
+            throw new UnauthorizedException('Conta não ativada!');
         }else{
             throw new UnauthorizedException('Por Favor, verificar as credendiais do login');
         }
